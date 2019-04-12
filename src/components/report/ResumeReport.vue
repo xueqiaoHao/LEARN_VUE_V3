@@ -2,46 +2,47 @@
   <div style="margin: 20px;">
     <div>
       <ul>
-        <li><div class="layout-breadcrumb">
+        <!-- <li><div class="layout-breadcrumb">
           <el-button type="text" @click="goMain ()">Home</el-button>
-        </div></li>
+        </div></li>-->
         <li>
           <el-row class="demo-autocomplete">
-        <el-col :span="8">
-          <el-autocomplete
-            class="inline-input"
-            v-model="state2"
-            :fetch-suggestions="querySearch"
-            placeholder="按专业查询"
-            :trigger-on-focus="false"
-            @select="handleSelect"
-          ></el-autocomplete>
-        </el-col>
-        <el-col :span="8">
-          <el-autocomplete
-            class="inline-input"
-            v-model="state2"
-            :fetch-suggestions="querySearch"
-            placeholder="按学历查询"
-            :trigger-on-focus="false"
-            @select="handleSelect"
-          ></el-autocomplete>
-        </el-col>
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
-      </el-row>
+            <el-col :span="8">
+              <a>专业</a>
+              <el-autocomplete
+                class="inline-input"
+                v-model="major"
+                :fetch-suggestions="querySearch"
+                placeholder="按专业查询"
+                :trigger-on-focus="false"
+                @select="handleSelect"
+              ></el-autocomplete>
+            </el-col>
+            <el-col :span="8">
+              <a>学历</a>
+              <!-- <el-autocomplete
+                class="inline-input"
+                v-model="educationBack"
+                :fetch-suggestions="querySearch"
+                placeholder="按学历查询"
+                :trigger-on-focus="false"
+                @select="handleSelect"
+              ></el-autocomplete>-->
+              <el-select v-model="educationBack" clearable placeholder="学历要求">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-col>
+            <el-button type="primary" icon="el-icon-search" @click="getTable">搜索</el-button>
+          </el-row>
         </li>
         <li>
           <div style="padding: 10px 0;">
-            <!-- 显示数据的表块儿 -->
-            <!-- <Table
-              border
-              :columns="columns1"
-              :data="data1"
-              :height="400"
-              @on-selection-change="s=>{change(s)}"
-              @on-row-dblclick="s=>{dblclick(s)}"
-            ></Table>-->
-            <el-table :data="tableData" style="width: 100%">
+            <el-table :data="tableData" height="350" style="width: 100%">
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-form label-position="left" inline class="demo-table-expand">
@@ -83,9 +84,10 @@
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page.sync="currentPage1"
-              :page-size="pageSize"
-              layout="total, prev, pager, next"
+              :current-page="this.pageInfo.pageNumber"
+              :page-sizes="[5,10]"
+              :page-size="10"
+              layout="total, sizes, prev, pager, next, jumper"
               :total="total"
             ></el-pagination>
           </div>
@@ -101,8 +103,8 @@ export default {
       // /*用于查找的登录名*/
       loginName: null,
       restaurants: [],
-      state1: '',
-      state2: '',
+      major: '',
+      educationBack: '',
       // /*分页total属性绑定值*/
       total: 0,
       // /*loading*/
@@ -112,51 +114,13 @@ export default {
         pageNumber: 1,
         pageSize: 10
       },
-      // /*user实体*/
-      user: {
-        id: null,
-        name: null,
-        loginName: null,
-        password: null,
-        passwordAgain: null,
-        email: null
-      },
-      // /*表显示字段*/
-      columns1: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: '专业',
-          key: 'major'
-        },
-        {
-          title: '学历',
-          key: 'educationBack'
-        },
-        {
-          title: '姓名',
-          key: 'name'
-        },
-        {
-          title: '电话',
-          key: 'phone'
-        },
-        {
-          title: '年龄',
-          key: 'age'
-        },
-        {
-          title: '英语水平',
-          key: 'languageLevel'
-        },
-        {
-          title: '计算机水平',
-          key: 'computerLevel'
-        }
-      ]
+      options: [{
+        value: '本科',
+        label: '本科'
+      }, {
+        value: '硕士',
+        label: '硕士'
+      }]
     }
   },
   mounted () {
@@ -171,17 +135,6 @@ export default {
     initPageInfo () {
       this.pageInfo.pageNumber = 1
       this.pageInfo.pageSize = 10
-    },
-    querySearch (queryString, cb) {
-      var restaurants = this.restaurants
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter (queryString) {
-      return (restaurant) => {
-        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
     },
     loadAll () {
       return [
@@ -198,10 +151,14 @@ export default {
     },
     // 得到表数据
     getTable () {
+      console.log(this.major)
+      console.log(this.educationBack)
       var url = this.HOST + '/resume/getResumeReport'
       var params = {
-        'pageNumber': 1,
-        'pageSize': 10
+        'pageNumber': this.pageInfo.pageNumber,
+        'pageSize': this.pageInfo.pageSize,
+        'major': this.major,
+        'educationBack': this.educationBack
       }
       this.$http.post(url, params,
         {
@@ -222,6 +179,27 @@ export default {
           console.log(error)
           alert('网络错误，不能访问简历报告')
         })
+    },
+    // 打印出当前页数和美业条数
+    handleSizeChange (val) {
+      console.log(val)
+      console.log('每页' + this.pageInfo.pageSize + '条')
+      // 处理页码选择
+      // this.pageNumber = val
+      console.log('选择的页码为:' + this.pageInfo.pageNumber)
+      // if (this.pageNum === 1) {
+      //   this.pageQueryWarning = this.queryWarning.slice(0, this.pageSize)
+      //   this.transformInfo()
+      // } else {
+      //   this.pageQueryWarning = this.queryWarning.slice((this.pageNum - 1) * this.pageSize, this.pageNum * this.pageSize)
+      //   this.transformInfo()
+      // }
+    },
+    handleCurrentChange (val) {
+      console.log('当前页:' + val)
+      this.pageInfo.pageNumber = val
+      console.log('pageNumber的值' + this.pageInfo.pageNumber)
+      this.getTable()
     }
   }
 }

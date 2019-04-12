@@ -1,4 +1,10 @@
 <style scoped>
+.el-icon-caret-bottom {
+          position: absolute;
+          right: -20px;
+          top: 25px;
+          font-size: 12px;
+}
 .layout {
   border: 1px solid #d7dde4;
   background: #e9eaec;
@@ -72,6 +78,11 @@
   text-align: center;
   /*box-shadow: 0 1px 6px #00BCD4;*/
 }
+.el-menu-vertical-demo{
+  height: 100%;
+  /* position: absolute; */
+  bottom: 0;
+}
 </style>
 <template>
   <div class="layout">
@@ -85,10 +96,10 @@
         <!-- <h5>自定义颜色</h5> -->
         <el-menu
           default-active="2"
+          background-color="#87CEFA"
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
-          background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
@@ -117,33 +128,29 @@
       </el-col>
       <el-col span="20">
         <div class="layout-header">
-          <strong>{{userName}}</strong>
-          <!-- <Dropdown trigger="click" style="margin-right: 50px" @on-click="m=>{dropdownSelect(m)}">
-            <img src="../../assets/kdhp.jpg">
-            <DropdownMenu class="dropdown-menu" slot="list">
-              <DropdownItem>退出</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>-->
+              欢迎您
+          <!-- <strong>{{userName}}</strong>
           <el-dropdown class="avatar-container right-menu-item" trigger="click">
             <div class="avatar-wrapper">
               欢迎您
               <i class="el-icon-caret-bottom"/>
             </div>
             <el-dropdown-menu slot="dropdown">
-              <router-link to="/">
-                <el-dropdown-item>回到首页</el-dropdown-item>
-              </router-link>
               <el-dropdown-item divided>
                 <span style="display:block;" @click="logout">退出登录</span>
               </el-dropdown-item>
             </el-dropdown-menu>
-          </el-dropdown>
+          </el-dropdown> -->
         </div>
-        <!-- <div class="layout-breadcrumb">
+
+        <div class="layout-breadcrumb">
           <el-button type="text" @click="goMain ()">Home</el-button>
-        </div>-->
+        </div>
+         <!-- <div class="layout-header">
+          <navbar></navbar>
+        </div> -->
         <div class="layout-content">
-          <test5></test5>
+          <resume></resume>
         </div>
         <div class="layout-copy">2015-2019 &copy; haohaohao</div>
       </el-col>
@@ -151,23 +158,25 @@
   </div>
 </template>
 <script>
-import test5 from '@/components/report/ResumeReport'
+import resume from '@/components/report/ResumeReport'
+// import navbar from '@/components/part/Navbar'
 export default {
-  data() {
+  data () {
     return {
       userName: ''
     }
   },
   components: {
-    test5
+    resume
+    // navbar
   },
-  mounted() {
+  mounted () {
     console.log(window.localStorage)
     this.userName = window.localStorage.getItem('currentUser_name')
   },
   methods: {
     /* 下拉菜单选择事件 */
-    dropdownSelect(e) {
+    dropdownSelect (e) {
       this.$router.push({ path: '/login' })
     }
   }
