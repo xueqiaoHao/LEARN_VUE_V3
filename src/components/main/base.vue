@@ -1,9 +1,9 @@
-<style scoped>
+<style>
 .el-icon-caret-bottom {
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
+  position: absolute;
+  right: -20px;
+  top: 25px;
+  font-size: 12px;
 }
 .layout {
   border: 1px solid #d7dde4;
@@ -78,7 +78,7 @@
   text-align: center;
   /*box-shadow: 0 1px 6px #00BCD4;*/
 }
-.el-menu-vertical-demo{
+.el-menu-vertical-demo {
   height: 100%;
   /* position: absolute; */
   bottom: 0;
@@ -98,8 +98,7 @@
           default-active="2"
           background-color="#87CEFA"
           class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
+          @select="handleSelectPath"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
@@ -109,8 +108,8 @@
               <span>简历信息</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="@/components/report/ResumeReport">查看简历</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
+              <el-menu-item index="1-1">查看学生简历</el-menu-item>
+              <el-menu-item index="1-2">发布简历</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
           <el-submenu index="2">
@@ -120,15 +119,15 @@
             </template>
             <el-menu-item-group>
               <!-- <template slot="title">分组一</template> -->
-              <el-menu-item index="2-1">发布</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
+              <el-menu-item index="2-1">查看招聘信息</el-menu-item>
+              <el-menu-item index="2-2">发布招聘信息</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
       </el-col>
-      <el-col span="20">
+      <el-col :span="20" >
         <div class="layout-header">
-              欢迎您
+          欢迎您
           <!-- <strong>{{userName}}</strong>
           <el-dropdown class="avatar-container right-menu-item" trigger="click">
             <div class="avatar-wrapper">
@@ -140,17 +139,17 @@
                 <span style="display:block;" @click="logout">退出登录</span>
               </el-dropdown-item>
             </el-dropdown-menu>
-          </el-dropdown> -->
+          </el-dropdown>-->
         </div>
 
         <div class="layout-breadcrumb">
-          <el-button type="text" @click="goMain ()">Home</el-button>
+          <el-button type="text" @click="goHome">Home</el-button>
         </div>
-         <!-- <div class="layout-header">
+        <!-- <div class="layout-header">
           <navbar></navbar>
-        </div> -->
+        </div>-->
         <div class="layout-content">
-          <resume></resume>
+          <router-view></router-view>
         </div>
         <div class="layout-copy">2015-2019 &copy; haohaohao</div>
       </el-col>
@@ -158,16 +157,41 @@
   </div>
 </template>
 <script>
-import resume from '@/components/report/ResumeReport'
+// import resume from '@/components/sys/ResumeReport'
 // import navbar from '@/components/part/Navbar'
 export default {
   data () {
     return {
-      userName: ''
+      userName: '',
+      pickerOptions1: {
+        shortcuts: [{
+          text: '今天',
+          onClick (picker) {
+            picker.$emit('pick', new Date())
+          }
+        }, {
+          text: '昨天',
+          onClick (picker) {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', date)
+          }
+        }, {
+          text: '一周前',
+          onClick (picker) {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', date)
+          }
+        }]
+      },
+      value1: '',
+      value2: '',
+      value3: ''
     }
   },
   components: {
-    resume
+    // resume
     // navbar
   },
   mounted () {
@@ -175,9 +199,27 @@ export default {
     this.userName = window.localStorage.getItem('currentUser_name')
   },
   methods: {
+    // home返回welcome页面
+    goHome () {
+      this.$router.push('/welcome')
+    },
     /* 下拉菜单选择事件 */
     dropdownSelect (e) {
       this.$router.push({ path: '/login' })
+    },
+    // 菜单点击触发右侧内容更改
+    handleSelectPath (key) {
+      switch (key) {
+        case '1-1':
+          this.$router.push('/ResumeReport')
+          break
+        case '2-1':
+          this.$router.push('/RecruitReport')
+          break
+        case '2-2':
+          this.$router.push('/RecruitPublish')
+          break
+      }
     }
   }
 }
