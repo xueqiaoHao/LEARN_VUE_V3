@@ -28,7 +28,7 @@
           label-width="80px"
         >
           <el-form-item label="用户名" prop="name">
-            <el-input type="text" v-model="user.name" autocomplete="on" placeholder="请输入用户名"></el-input>
+            <el-input type="text" v-model="user.name" autocomplete="on" id="userName" placeholder="请输入用户名"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="pass">
             <el-input
@@ -39,19 +39,16 @@
               autocomplete="on"
               placeholder="请输入密码"
             ></el-input>
-            <!-- <span class="show-pwd" @click="showPwd">
-              <svg-icon icon-class="eye"/>
-            </span>-->
           </el-form-item>
           <el-form-item>
             <el-button
               type="primary"
-              icon="el-icon-upload"
+              icon="el-icon-d-arrow-right"
               @click.native.prevent="handleLogin"
+              :plain="true"
               style="width: 200px"
             >登录</el-button>
           </el-form-item>
-          <span class="loginerror" v-show="errorTip === 1">用户名或密码错误</span>
         </el-form>
       </el-row>
       <div class="footer">
@@ -85,6 +82,10 @@ export default {
       user: {
       },
       errorTip: 0,
+      activeTip: 0,
+      nameTip: 0,
+      passTip: 0,
+      loginTip: 0,
       rules: {
         name: [
           { required: true, message: '用户名不能为空', trigger: 'blur', validator: validateUsername }
@@ -105,13 +106,29 @@ export default {
       console.log(this.user.name)
       console.log(this.user.pass)
       if (this.active === '请选择') {
-        alert('请选择您的身份并登陆')
-      } else if (this.user.name === '' || this.user.pass === '' || this.user.name === undefined || this.user.pass === undefined) {
-        alert('请填写完成账号密码信息再进行登陆')
+        this.$message({
+          showClose: true,
+          message: '请选择您的身份再进行登录',
+          type: 'warning'
+        })
+        // alert('请选择您的身份并登陆')
+      } else if (this.user.name === '' || this.user.name === undefined) {
+        this.$message({
+          showClose: true,
+          message: '用户名不能为空',
+          type: 'warning'
+        })
+        // alert('请填写完成账号密码信息再进行登陆')
+      } else if (this.user.pass === undefined || this.user.pass === '') {
+        this.$message({
+          showClose: true,
+          message: '请填写您的密码并进行登录',
+          type: 'warning'
+        })
       } else {
         var url = this.HOST + '/user/login'
         var params = {
-          'userName': this.user.name, 'password': this.user.pass
+          'loginAccount': this.user.name, 'password': this.user.pass
         }
         console.log(params)
         this.$http.post(url, params)
@@ -120,12 +137,21 @@ export default {
           // }
           // then获取成功；response成功后的返回值（对象）
           .then(response => {
-            console.log(response)
-            var res = response.data
+            console.log('respon' + response)
+            var res = response.data.status
+            console.log('res' + res)
             if (res === 0) {
               this.loading = true
-              console.log('push to base')
-              this.$router.push({ path: '/base' })
+              this.$message({
+                showClose: true,
+                message: '登录成功 来啦老弟 !',
+                type: 'success'
+              })
+              console.log('身份类型为' + this.active)
+              this.$router.push('/base')
+              // localStorage.removeItem('currentUser_name')
+              var currentUsername = document.getElementById('userName').value
+              sessionStorage.setItem('currentUserAccount', currentUsername)
             } else {
               console.log('errorTip')
               this.errorTip = 1
@@ -221,7 +247,7 @@ p b {
   height: 100%;
   background-size: cover;
   overflow: hidden;
-  background-image: url(../../assets/WindRoom.jpg);
+  background-image: url(../../assets/kdeast.jpg);
   background-position: center center;
   box-shadow: 0 0px 3px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -245,6 +271,6 @@ li {
   list-style-type: none;
 }
 .loginerror {
-  color:#FF0000;
+  color: #ff0000;
 }
 </style>

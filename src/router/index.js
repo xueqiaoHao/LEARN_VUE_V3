@@ -10,18 +10,20 @@ const routes = [
     redirect: '/login'
   },
   {
-    path: '/city',
-    component: () => import('@/components/part/choseCity'),
+    path: '/layout',
+    component: () => import('@/components/part/layout'),
     hidden: true
   },
   {
     path: '/hello',
-    component: () => import('@/components/HelloWorld.vue'),
+    component: () => import('@/components/main/show.vue'),
     hidden: true
   },
   {
     path: '/base',
-    // redirect: 'welcome',
+    meta: {
+      requireAuth: true
+    },
     component: () => import('@/components/main/base'),
     hidden: true,
     children: [
@@ -38,12 +40,28 @@ const routes = [
         component: () => import('@/components/sys/ResumeReport')
       },
       {
+        path: '/ResumeDelivered',
+        component: () => import('@/components/sys/ResumeDelivered')
+      },
+      {
+        path: '/ResumeCreate',
+        component: () => import('@/components/sys/ResumeCreate')
+      },
+      {
         path: '/RecruitReport',
         component: () => import('@/components/sys/RecruitReport')
       },
       {
         path: '/RecruitPublish',
         component: () => import('@/components/sys/RecruitPublish')
+      },
+      {
+        path: '/RecruitAnalyse',
+        component: () => import('@/components/sys/RecruitAnalyse')
+      },
+      {
+        path: '/AccountManage',
+        component: () => import('@/components/sys/AccountManage')
       }
     ]
   },
@@ -53,19 +71,6 @@ const routes = [
     component: () => import('@/components/main/login'),
     hidden: true
   }
-  // {
-  //   path: '/table',
-  //   component: () => import('@/components/table/resumetable'),
-  //   hidden: true
-  // }
-  // {
-  //   path: '/resume',
-  //   component: () => import('@/components/report/ResumeReport'),
-  //   meta: {
-  //     requireAuth: true
-  //     // 添加该字段，表示进入这个路由是需要登录的
-  //   }
-  // }
 ]
 // eslint-disable-next-line no-undef
 const router = new VueRouter({
@@ -77,28 +82,19 @@ if (window.localStorage.getItem('token')) {
 }
 router.beforeEach((to, from, next) => {
   // 判断该路径是否需要登录权限
-  // if (to.matched.some(r => r.meta.requireAuth)) {
-  //   // 通过vuexstate 获取当前的token是否存在
-  //   if (store.state.token) {
-  //     next()
-  //   } else {
-  //     next({
-  //       path: '/login',
-  //       query: {redirect: to.fullPath}
-  //     })
-  //   }
-  // } else {
-  //   next()
-  // }
-  if (to.path === '/login') {
-    next()
-  } else {
-    let token = localStorage.getItem('Authorization')
-    if (token === 'null' || token === '') {
-      next('/login')
-    } else {
+  if (to.meta.requireAuth) {
+    if (to.path === '/login') {
       next()
+    } else {
+      let token = localStorage.getItem('Authorization')
+      if (token === 'null' || token === '') {
+        next('/login')
+      } else {
+        next()
+      }
     }
+  } else {
+    next()
   }
 })
 

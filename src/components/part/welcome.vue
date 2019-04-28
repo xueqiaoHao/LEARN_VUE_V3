@@ -10,13 +10,13 @@
 }
 #welcome img {
   width: 100%;
-  height: 100%;
+  height: 80%;
   overflow: auto;
 }
 </style>
 <template>
   <div id="welcome">
-    <img src="@/assets/welcome.jpg">
+    <img src="@/assets/WindRoom.jpg">
   </div>
 </template>
 <script>

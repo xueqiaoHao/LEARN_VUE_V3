@@ -176,29 +176,14 @@ export default {
         jobInfo: '',
         careerTalk: '',
         talkTime: ''
-      }
+      },
+      successTip: 0
     }
   },
   methods: {
     submitForm (recruitForm) {
       var url = this.HOST + '/recruit/publishRecruitment'
       var params = this.recruitForm
-      // 'name': this.recruitForm.name,
-      // 'address': this.recruitForm.address,
-      // 'nature': this.recruitForm.nature,
-      // 'type': this.recruitForm.type,
-      // 'publisher': this.recruitForm.publisher,
-      // 'depart': this.recruitForm.depart,
-      // 'phone': this.recruitForm.phone,
-      // 'info': this.recruitForm.info,
-      // 'major': this.recruitForm.major,
-      // 'educationBack': this.recruitForm.educationBack,
-      // 'peopleNums': this.recruitForm.peopleNums,
-      // 'salary': this.recruitForm.salary,
-      // 'jobWay': this.recruitForm.jobWay,
-      // 'jobInfo': this.recruitForm.jobInfo,
-      // 'careerTalk': this.recruitForm.careerTalk,
-      // 'talkTime': this.recruitForm.talkTime
       this.$http.post(url, params,
         {
           headers: {
@@ -208,7 +193,8 @@ export default {
         // then获取成功；response成功后的返回值（对象）
         .then(response => {
           // console.log(response.data)
-          alert(response.data)
+          this.successTip = 1
+          // alert(response.data)
         })
         .catch(error => {
           console.log(error)

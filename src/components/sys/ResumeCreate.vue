@@ -1,41 +1,38 @@
 <template>
   <div style="margin: 20px;">
-    <el-form :model="recruitForm" ref="recruitForm" label-width="100px">
-      <!-- <el-form-item label="公司信息" prop="info">
-        <el-input type="textarea" v-model="recruitForm.info"></el-input>
-      </el-form-item>-->
+    <el-form :model="resumeForm" ref="resumeForm" label-width="100px">
       <el-col :span="11">
-        <el-form-item label="公司名称" prop="name">
-          <el-input v-model="recruitForm.name"></el-input>
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="resumeForm.name"></el-input>
         </el-form-item>
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="公司地址" prop="address">
-          <el-input v-model="recruitForm.address"></el-input>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model="resumeForm.age"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="11">
-        <el-form-item label="岗位类型" prop="nature">
-          <el-input v-model="recruitForm.nature"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col class="line" :span="2">-</el-col>
-      <el-col :span="11">
-        <el-form-item label="招收专业" prop="major">
-          <el-input v-model="recruitForm.major"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="11">
-        <el-form-item label="薪资待遇" prop="salary">
-          <el-input v-model="recruitForm.salary"></el-input>
+        <el-form-item label="性别" prop="sex">
+          <el-input v-model="resumeForm.sex"></el-input>
         </el-form-item>
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="公司类型" prop="type">
+        <el-form-item label="专业" prop="major">
+          <el-input v-model="resumeForm.major"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="11">
+        <el-form-item label="生源地" prop="origin">
+          <el-input v-model="resumeForm.origin"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col class="line" :span="2">-</el-col>
+      <el-col :span="11">
+        <el-form-item label="培养方式" prop="type">
           <el-col :span="12">
-            <el-select v-model="recruitForm.type" clearable placeholder="请选择" style="width:380px">
+            <el-select v-model="resumeForm.type" clearable placeholder="请选择" style="width:380px">
               <el-option
                 v-for="item in typeOptions"
                 :key="item.value"
@@ -47,9 +44,9 @@
         </el-form-item>
       </el-col>
       <el-col :span="11">
-        <el-form-item label="学历要求" prop="educationBack">
+        <el-form-item label="学历背景" prop="educationBack">
           <el-select
-            v-model="recruitForm.educationBack"
+            v-model="resumeForm.educationBack"
             clearable
             placeholder="请选择"
             style="width:380px"
@@ -65,15 +62,15 @@
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="招收人数" prop="peopleNums">
-          <el-input v-model="recruitForm.peopleNums"></el-input>
+        <el-form-item label="期望工资岗位" prop="jobIntention">
+          <el-input v-model="resumeForm.jobIntention"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="11">
-        <el-form-item label="招聘方式" prop="jobWay">
-          <el-select v-model="recruitForm.jobWay" clearable placeholder="请选择" style="width:380px">
+        <el-form-item label="是否公开" prop="isPublic">
+          <el-select v-model="resumeForm.isPublic" clearable placeholder="请选择" style="width:380px">
             <el-option
-              v-for="item in jobWayOptions"
+              v-for="item in isPublicOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -83,49 +80,55 @@
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="职位信息" prop="jobInfo">
-          <el-input type="textarea" v-model="recruitForm.jobInfo"></el-input>
+        <el-form-item label="外语水平" prop="languageLevel">
+          <el-autocomplete
+            class="inline-input"
+            v-model="resumeForm.languageLevel"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入外语水平"
+            style="width:380px"
+            @select="handleSelect"
+          ></el-autocomplete>
         </el-form-item>
       </el-col>
       <el-col :span="11">
-        <el-form-item label="宣讲地点" prop="careerTalk">
-          <el-input v-model="recruitForm.careerTalk"></el-input>
+        <el-form-item label="现居住地址" prop="address">
+          <el-input v-model="resumeForm.address"></el-input>
         </el-form-item>
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="宣讲时间" prop="talkTime" required>
+        <el-form-item label="毕业时间" prop="graduationTime" required>
           <el-col :span="11">
             <el-date-picker
-              v-model="recruitForm.talkTime"
-              type="datetime"
-              placeholder="选择日期时间"
-              default-time="14:00:00"
+              v-model="resumeForm.graduationTime"
+              type="month"
+              placeholder="选择毕业年月"
               style="width:380px"
             ></el-date-picker>
           </el-col>
         </el-form-item>
       </el-col>
-      <el-col :span="24">
-        <el-form-item label="公司信息" prop="info">
-          <el-input type="textarea" v-model="recruitForm.info"></el-input>
-        </el-form-item>
-      </el-col>
       <el-col :span="11">
-        <el-form-item label="发布人" prop="publisher">
-          <el-input v-model="recruitForm.publisher"></el-input>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="resumeForm.phone"></el-input>
         </el-form-item>
       </el-col>
       <el-col class="line" :span="2">-</el-col>
       <el-col :span="11">
-        <el-form-item label="联系方式" prop="phone">
-          <el-input v-model="recruitForm.phone"></el-input>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="resumeForm.email"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="24">
+        <el-form-item label="自我介绍" prop="message">
+          <el-input type="textarea" v-model="resumeForm.message"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="20">
         <el-form-item>
-          <el-button type="primary" @click="submitForm('recruitForm')">立即发布</el-button>
-          <el-button @click="resetForm('recruitForm')">重置</el-button>
+          <el-button type="primary" :plain="true" @click="submitForm('resumeForm')">立即发布</el-button>
+          <el-button @click="resetForm('resumeForm')">重置</el-button>
         </el-form-item>
       </el-col>
     </el-form>
@@ -135,15 +138,13 @@
 export default {
   data () {
     return {
+      levels: [],
       typeOptions: [{
-        value: '国企',
-        label: '国企'
+        value: '全日制',
+        label: '全日制'
       }, {
-        value: '私企',
-        label: '私企'
-      }, {
-        value: '外企',
-        label: '外企'
+        value: '非全日制',
+        label: '非全日制'
       }],
       educationOptions: [{
         value: '本科',
@@ -152,12 +153,12 @@ export default {
         value: '硕士',
         label: '硕士'
       }],
-      jobWayOptions: [{
-        value: '网上招聘',
-        label: '网上招聘'
+      isPublicOptions: [{
+        value: '1',
+        label: '公开简历'
       }, {
-        value: '现场宣讲',
-        label: '现场宣讲'
+        value: '0',
+        label: '不公开简历'
       }],
       resumeForm: {
         name: '',
@@ -187,26 +188,34 @@ export default {
       }
     }
   },
+  mounted () {
+    this.levels = this.loadAll()
+  },
   methods: {
-    submitForm (recruitForm) {
+    querySearch (queryString, cb) {
+      var levels = this.levels
+      var results = queryString ? levels.filter(this.createFilter(queryString)) : levels
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (level) => {
+        return (level.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    loadAll () {
+      return [
+        { 'value': 'CET4', 'express': '英语四级' },
+        { 'value': 'CET6', 'express': '英语四级' }
+      ]
+    },
+    handleSelect (item) {
+      console.log(item)
+    },
+    submitForm (resumeForm) {
+      alert('招聘信息发布成功')
       var url = this.HOST + '/recruit/publishRecruitment'
-      var params = this.recruitForm
-      // 'name': this.recruitForm.name,
-      // 'address': this.recruitForm.address,
-      // 'nature': this.recruitForm.nature,
-      // 'type': this.recruitForm.type,
-      // 'publisher': this.recruitForm.publisher,
-      // 'depart': this.recruitForm.depart,
-      // 'phone': this.recruitForm.phone,
-      // 'info': this.recruitForm.info,
-      // 'major': this.recruitForm.major,
-      // 'educationBack': this.recruitForm.educationBack,
-      // 'peopleNums': this.recruitForm.peopleNums,
-      // 'salary': this.recruitForm.salary,
-      // 'jobWay': this.recruitForm.jobWay,
-      // 'jobInfo': this.recruitForm.jobInfo,
-      // 'careerTalk': this.recruitForm.careerTalk,
-      // 'talkTime': this.recruitForm.talkTime
+      var params = this.resumeForm
       this.$http.post(url, params,
         {
           headers: {
@@ -215,8 +224,16 @@ export default {
         })
         // then获取成功；response成功后的返回值（对象）
         .then(response => {
+          console.log(response.data.data)
+          this.$message({
+            showClose: true,
+            message: '简历保存成功 !',
+            type: 'success'
+          })
           // console.log(response.data)
           alert(response.data)
+          console.log(response.data)
+          this.$refs[resumeForm].resetFields()
         })
         .catch(error => {
           console.log(error)

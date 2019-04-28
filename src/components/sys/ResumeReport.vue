@@ -34,7 +34,7 @@
         </li>
         <li>
           <div style="padding: 10px 0;">
-            <el-table :data="tableData" height="350" style="width: 100%">
+            <el-table v-loading="loading" :data="tableData" height="350" style="width: 100%">
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-form label-position="left" inline class="demo-table-expand">
@@ -153,8 +153,11 @@ export default {
     },
     // 得到表数据
     getTable () {
+      var name = sessionStorage.getItem('currentUserAccount')
+      console.log('查看简历者的用户名' + name)
       var url = this.HOST + '/resume/getResumeReport'
       var params = {
+        'currentUserAccount': sessionStorage.getItem('currentUserAccount'),
         'pageNumber': this.pageInfo.pageNumber,
         'pageSize': this.pageInfo.pageSize,
         'major': this.major,
@@ -171,10 +174,12 @@ export default {
           var responseData = response.data
           this.tableData = responseData.data.dataList
           this.total = responseData.data.total
+          this.loading = false
         })
         .catch(error => {
           console.log(error)
           alert('网络错误，不能访问简历报告')
+          this.loading = false
         })
     },
     // 打印出当前页数和美业条数
