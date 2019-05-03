@@ -20,11 +20,11 @@ const routes = [
     hidden: true
   },
   {
-    path: '/base',
+    path: '/main',
     meta: {
       requireAuth: true
     },
-    component: () => import('@/components/main/base'),
+    component: () => import('@/components/main/main'),
     hidden: true,
     children: [
       {
@@ -71,6 +71,11 @@ const routes = [
     component: () => import('@/components/main/login'),
     hidden: true
   }
+  // {
+  //   path: '/main',
+  //   component: () => import('@/components/main/main'),
+  //   hidden: true
+  // }
 ]
 // eslint-disable-next-line no-undef
 const router = new VueRouter({

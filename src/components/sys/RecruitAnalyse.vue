@@ -1,10 +1,19 @@
 <template>
-<div>
-  <div ref="myEchart" style="width:500px;height:400px;float:left"></div>
-  <div style="width:500px;height:400px;float:right">
-    <el-progress type="circle" :percentage="this.signedNum" stroke-width="10" width="300" style="top:50px">
-      </el-progress></div>
-</div>
+  <el-row>
+    <div>
+      <div ref="myEchart" style="width:500px;height:400px;float:left"></div>
+      <div style="width:400px;height:400px;float:right">
+        学生签约率
+        <el-progress
+          type="circle"
+          :percentage="this.signedNum"
+          :stroke-width="10"
+          :width="330"
+          style="top:50px"
+        ></el-progress>
+      </div>
+    </div>
+  </el-row>
 </template>
 
 <script type="text/babel">
@@ -12,20 +21,17 @@ import echarts from 'echarts'
 export default {
   data () {
     return {
-      signedNum: '',
+      signedNum: 0,
       dataList: [
-        { value: 98, name: '计算机' },
-        { value: 108, name: '通信工程' },
-        { value: 34, name: '软件工程' },
-        { value: 77, name: '电信工程' },
-        { value: 35, name: '网络工程' }
-      ]
+      ],
+      tempDataList: []
     }
   },
   methods: {
     // 图表初始化数据
     initChart () {
       let myChart = echarts.init(this.$refs.myEchart)
+      // this.getDataList()
       myChart.setOption({
         tooltip: {
           trigger: 'item',
@@ -38,7 +44,40 @@ export default {
             radius: '80%',
             center: ['52%', '53%'],
             avoidLabelOverlap: false,
-            data: this.dataList,
+            data: function () {
+              var url = this.HOST + '/recruit/getRecruitmentAnalyse'
+              var params = {
+              }
+              this.$http.post(url, params,
+                {
+                  headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                  }
+                })
+                // then获取成功;response成功后的返回值（对象）
+                .then(response => {
+                  // console.log(response.data)
+                  var responseData = response.data
+                  console.log('responseData:' + responseData)
+                  var tempnum
+                  var tempmajor
+                  // 把结果遍历存入datalist数组
+                  for (var j = 0, len = responseData.length; j < len; j++) {
+                    tempnum = responseData[j].num
+                    tempmajor = responseData[j].major
+                    console.log(tempmajor)
+                    // this.dataList.push(tempnum, tempmajor)
+                    this.dataList.push({ value: tempnum, name: tempmajor })
+                  }
+                  // this.dataList = responseData
+                  console.log('赋值后的dataList' + this.dataList)
+                })
+                .catch(error => {
+                  console.log(error)
+                  alert('网络错误，不能访问简历报告')
+                })
+              return this.dataList
+            },
             itemStyle: {
               emphasis: {
                 shadowBlur: 5,
@@ -62,9 +101,9 @@ export default {
         })
         // then获取成功；response成功后的返回值（对象）
         .then(response => {
-          console.log(response.data)
+          // console.log(response.data)
           var responseData = response.data
-          console.log(responseData.data)
+          // console.log(responseData.data)
           this.signedNum = responseData.data
         })
         .catch(error => {
@@ -72,6 +111,39 @@ export default {
           alert('网络错误，不能访问简历报告')
         })
     }
+    // getDataList () {
+    //   var url = this.HOST + '/recruit/getRecruitmentAnalyse'
+    //   var params = {
+    //   }
+    //   this.$http.post(url, params,
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json;charset=UTF-8'
+    //       }
+    //     })
+    //     // then获取成功;response成功后的返回值（对象）
+    //     .then(response => {
+    //       // console.log(response.data)
+    //       var responseData = response.data
+    //       console.log('responseData:' + responseData)
+    //       var tempnum
+    //       var tempmajor
+    //       // 把结果遍历存入datalist数组
+    //       for (var j = 0, len = responseData.length; j < len; j++) {
+    //         tempnum = responseData[j].num
+    //         tempmajor = responseData[j].major
+    //         console.log(tempmajor)
+    //         // this.dataList.push(tempnum, tempmajor)
+    //         this.dataList.push({ 'value': tempnum, 'name': tempmajor })
+    //       }
+    //       // this.dataList = responseData
+    //       console.log('赋值后的dataList' + this.dataList)
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //       alert('网络错误，不能访问简历报告')
+    //     })
+    // }
   },
   mounted () {
     let obj = this.$refs.myEchart

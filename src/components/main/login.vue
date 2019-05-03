@@ -148,7 +148,7 @@ export default {
                 type: 'success'
               })
               console.log('身份类型为' + this.active)
-              this.$router.push('/base')
+              this.$router.push('/main')
               // localStorage.removeItem('currentUser_name')
               var currentUsername = document.getElementById('userName').value
               sessionStorage.setItem('currentUserAccount', currentUsername)

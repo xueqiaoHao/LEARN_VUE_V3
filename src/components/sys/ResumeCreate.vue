@@ -127,8 +127,8 @@
       </el-col>
       <el-col :span="20">
         <el-form-item>
-          <el-button type="primary" :plain="true" @click="submitForm('resumeForm')">立即发布</el-button>
-          <el-button @click="resetForm('resumeForm')">重置</el-button>
+          <el-button type="primary" :plain="true" @click="submitForm('resumeForm')">保存简历</el-button>
+          <el-button @click="resetForm('resumeForm')">重置信息</el-button>
         </el-form-item>
       </el-col>
     </el-form>
