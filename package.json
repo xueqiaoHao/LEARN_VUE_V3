@@ -16,7 +16,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "echarts": "^4.2.1",
-    "element-ui": "^2.7.2",
+    "element-ui": "^2.8.2",
     "eslint-plugin-html": "^5.0.3",
     "iview": "^3.3.3",
     "node-sass": "^4.11.0",

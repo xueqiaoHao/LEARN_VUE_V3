@@ -68,7 +68,7 @@
                   <el-button
                     id="deleteButton"
                     type="info"
-                    icon="el-icon-message"
+                    icon="el-icon-s-promotion"
                     circle
                     size="medium"
                     @click.native.prevent="handleDeliver(scope.$index, scope.row)"
@@ -78,7 +78,7 @@
             </el-table>
             <!-- 投递提示框 -->
             <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-              <div class="del-dialog-cnt">确定简历到此公司？</div>
+              <div class="del-dialog-cnt">确定简历到公司<a id="comName">{{this.deliverCom}}</a></div>
               <span slot="footer" class="dialog-footer">
                 <el-button @click="delVisible = false">取 消</el-button>
                 <el-button type="primary" @click="deliverResume">确 定</el-button>
@@ -270,5 +270,8 @@ export default {
 <style>
 li {
   list-style-type: none;
+}
+#comName{
+  color:darksalmon
 }
 </style>
