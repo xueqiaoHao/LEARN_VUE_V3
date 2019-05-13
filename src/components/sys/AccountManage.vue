@@ -35,10 +35,21 @@
         <li>
           <div style="padding: 10px 0;">
             <el-table v-loading="loading" :data="tableData" border height="350" style="width: 100%">
-              <el-table-column prop="id" label="账号id" width="180"></el-table-column>
+              <el-table-column prop="id" label="账号id" fixed width="180"></el-table-column>
               <el-table-column prop="userName" label="登录名" width="180"></el-table-column>
               <el-table-column prop="account" label="账号" width="180"></el-table-column>
               <el-table-column prop="password" label="密码"></el-table-column>
+              <!-- <el-table-column prop="email" label="邮箱"></el-table-column> -->
+              <el-table-column label="用户身份" width="135px">
+                <template slot-scope="scope">
+                  <el-button
+                    id="editButton"
+                    size="small"
+                    icon="el-icon-s-custom"
+                    @click="handleRole(scope.$index, scope.row)"
+                  ></el-button>
+                </template>
+              </el-table-column>
               <el-table-column label="删除用户" width="135px">
                 <template slot-scope="scope">
                   <!-- <el-button
@@ -46,7 +57,7 @@
                     size="small"
                     icon="el-icon-edit"
                     @click="handleEdit(scope.$index, scope.row)"
-                  ></el-button> -->
+                  ></el-button>-->
                   <el-button
                     id="deleteButton"
                     type="danger"
@@ -58,6 +69,26 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-dialog title="权限赋予" :visible.sync="setRole" width="300px" center>
+              <div class="del-dialog-cnt">
+                设置用户
+                <strong>{{this.pointName}}</strong>的身份类型为
+                <el-select v-model="roleType" placeholder="请选择" clearable>
+                  <el-option-group v-for="group in options" :key="group.label" :label="group.label">
+                    <el-option
+                      v-for="item in group.options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-option-group>
+                </el-select>
+              </div>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="setRole = false">取 消</el-button>
+                <el-button type="primary" @click="setUserRole">确 定</el-button>
+              </span>
+            </el-dialog>
             <!-- 删除提示框 -->
             <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
               <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
@@ -105,10 +136,30 @@ export default {
         password: '',
         email: ''
       },
+      userId: 1,
+      pointName: '',
       formLabelWidth: '120px',
       delVisible: false, // 删除提示弹框的状态
       msg: '', // 记录每一条的信息，便于取id
-      delid: ''// 存放删除的数据
+      delid: '', // 存放删除的数据
+      setRole: false,
+      roleType: '',
+      options: [{
+        label: '管理者',
+        options: [{
+          value: '1',
+          label: '管理员'
+        }]
+      }, {
+        label: '成员身份',
+        options: [{
+          value: '3',
+          label: '公司身份'
+        }, {
+          value: '2',
+          label: '学生身份'
+        }]
+      }]
     }
   },
   mounted: function () {
@@ -178,28 +229,32 @@ export default {
     // 提交表单
     submitForm (userForm) {
       console.log(this.userForm)
-      this.dialogFormVisible = false
-      var url = this.HOST + '/user/addUser'
-      var params = this.userForm
-      this.$http.post(url, params,
-        {
-          headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
-          }
-        })
-        // then获取成功；response成功后的返回值（对象）
-        .then(response => {
-          this.$message({
-            message: '创建成功',
-            center: true,
-            type: 'success'
+      if (this.userForm.userName === null || this.userForm.userName === '' || this.userForm.account === null || this.userForm.password === null || this.userForm.account === '' || this.userForm.password === '') {
+        alert('请填写完成必要信息再进行提交操作')
+      } else {
+        var url = this.HOST + '/user/addUser'
+        var params = this.userForm
+        this.$http.post(url, params,
+          {
+            headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+            }
           })
-          this.getTable()
-        })
-        .catch(error => {
-          console.log(error)
-          alert('网络错误，不能访问简历报告')
-        })
+          // then获取成功；response成功后的返回值（对象）
+          .then(response => {
+            this.$message({
+              message: '创建成功',
+              center: true,
+              type: 'success'
+            })
+            this.getTable()
+          })
+          .catch(error => {
+            console.log(error)
+            alert('网络错误，不能访问简历报告')
+          })
+        this.dialogFormVisible = false
+      }
     },
     // 删除用户，单条
     handleDelete (index, row) {
@@ -236,6 +291,46 @@ export default {
           alert('网络错误，删除失败')
         })
       this.delVisible = false // 关闭删除提示模态框
+    },
+    // 点击一行后为此行账号附加身份信息
+    handleRole (index, row) {
+      this.pointName = row.userName
+      this.setRole = true
+      this.userId = row.id
+    },
+    setUserRole () {
+      console.log(this.userId)
+      console.log(this.roleType)
+      if (this.userId === null || this.roleType === null || this.userId === '' || this.roleType === '') {
+        alert('请选定身份类型后再进行提交操作')
+      } else {
+        var url = this.HOST + '/user/setUserRole'
+        var params = {
+          'userId': this.userId,
+          'role': this.roleType
+        }
+        console.log(params)
+        this.$http.post(url, params,
+          {
+            headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+            }
+          })
+          // then获取成功；response成功后的返回值（对象）
+          .then(response => {
+            this.$message({
+              message: '身份设定成功',
+              center: true,
+              type: 'success'
+            })
+            this.getTable()
+          })
+          .catch(error => {
+            console.log(error)
+            alert('网络错误，身份设定失败')
+          })
+        this.setRole = false
+      }
     }
   }
 }
@@ -244,10 +339,13 @@ export default {
 li {
   list-style-type: none;
 }
+#userName {
+  background-color: aqua;
+}
 #editButton {
   float: left;
 }
 #deleteButton {
-  margin-left: 35%
+  margin-left: 35%;
 }
 </style>

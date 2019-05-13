@@ -1,6 +1,8 @@
 <template>
   <div style="margin: 20px;">
-    <el-form :model="resumeForm" ref="resumeForm" label-width="100px">
+    <el-button type="primary" @click="publish" style="create">创建简历</el-button>
+    <el-button type="info" v-show="isPublish" @click="isPublish=false" style="create">收起</el-button>
+    <el-form :model="resumeForm"  v-show="isPublish" ref="resumeForm" label-width="100px">
       <el-col :span="11">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="resumeForm.name"></el-input>
@@ -32,7 +34,7 @@
       <el-col :span="11">
         <el-form-item label="培养方式" prop="type">
           <el-col :span="12">
-            <el-select v-model="resumeForm.type" clearable placeholder="请选择" style="width:380px">
+            <el-select v-model="resumeForm.type" clearable placeholder="请选择" style="width:337px">
               <el-option
                 v-for="item in typeOptions"
                 :key="item.value"
@@ -49,7 +51,7 @@
             v-model="resumeForm.educationBack"
             clearable
             placeholder="请选择"
-            style="width:380px"
+            style="width:337px"
           >
             <el-option
               v-for="item in educationOptions"
@@ -68,7 +70,7 @@
       </el-col>
       <el-col :span="11">
         <el-form-item label="是否公开" prop="isPublic">
-          <el-select v-model="resumeForm.isPublic" clearable placeholder="请选择" style="width:380px">
+          <el-select v-model="resumeForm.isPublic" clearable placeholder="请选择" style="width:337px">
             <el-option
               v-for="item in isPublicOptions"
               :key="item.value"
@@ -86,7 +88,7 @@
             v-model="resumeForm.languageLevel"
             :fetch-suggestions="querySearch"
             placeholder="请输入外语水平"
-            style="width:380px"
+            style="width:337px"
             @select="handleSelect"
           ></el-autocomplete>
         </el-form-item>
@@ -104,7 +106,7 @@
               v-model="resumeForm.graduationTime"
               type="month"
               placeholder="选择毕业年月"
-              style="width:380px"
+              style="width:337px"
             ></el-date-picker>
           </el-col>
         </el-form-item>
@@ -185,7 +187,8 @@ export default {
         isPublish: '',
         deliveredCom: '',
         isSigned: ''
-      }
+      },
+      isPublish: false
     }
   },
   mounted () {
@@ -211,6 +214,9 @@ export default {
     },
     handleSelect (item) {
       console.log(item)
+    },
+    publish () {
+      this.isPublish = true
     },
     submitForm (resumeForm) {
       alert('招聘信息发布成功')
@@ -247,4 +253,7 @@ export default {
 }
 </script>
 <style>
+#create{
+  float: left;
+}
 </style>
