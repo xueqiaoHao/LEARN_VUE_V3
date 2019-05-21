@@ -150,11 +150,14 @@ export default {
               console.log('身份类型为' + this.active)
               this.$router.push('/main')
               // localStorage.removeItem('currentUser_name')
-              var currentUsername = document.getElementById('userName').value
-              sessionStorage.setItem('currentUserAccount', currentUsername)
+              var currentUserAccount = document.getElementById('userName').value
+              sessionStorage.setItem('currentUserAccount', currentUserAccount)
+            } else if (res === 5) {
+              // console.log('errorTip')
+              // this.errorTip = 1
+              this.$message.error('对不起，您输入的密码有误')
             } else {
-              console.log('errorTip')
-              this.errorTip = 1
+              this.$message.error('对不起,你输入的账号未注册')
             }
           })
           // 获取失败

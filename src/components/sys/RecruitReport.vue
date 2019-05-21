@@ -56,6 +56,9 @@
                     <el-form-item label="宣讲地点">
                       <span>{{ props.row.careerTalk }}</span>
                     </el-form-item>
+                    <el-form-item label="宣讲地点">
+                      <span>{{ props.row.talkTime }}</span>
+                    </el-form-item>
                   </el-form>
                 </template>
               </el-table-column>

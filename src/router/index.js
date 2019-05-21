@@ -62,6 +62,10 @@ const routes = [
       {
         path: '/AccountManage',
         component: () => import('@/components/sys/AccountManage')
+      },
+      {
+        path: '/SignedState',
+        component: () => import('@/components/sys/signState')
       }
     ]
   },
